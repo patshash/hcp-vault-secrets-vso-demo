@@ -19,6 +19,10 @@ terraform {
   }
 }
 
+provider "aws" {
+  region = data.tfe_outputs.deploy-eks.values.region
+}
+
 provider "hcp" {}
 # Get HCP ORG ID
 data "hcp_organization" "this" {
