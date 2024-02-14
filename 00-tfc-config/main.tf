@@ -52,6 +52,7 @@ resource "tfe_workspace" "deploy_eks" {
   project_id           = tfe_project.tfe_project.id
   queue_all_runs       = false
   working_directory    = "01-deploy-eks"
+  remote_state_consumer_ids = [tfe_workspace.config-vault-secret-vso.id, tfe_workspace.sync-secret-to-k8.id]
   vcs_repo {
     branch             = "main"
     identifier         = var.git_repo
@@ -65,6 +66,8 @@ resource "tfe_workspace" "config-vault-secret-vso" {
   project_id           = tfe_project.tfe_project.id
   queue_all_runs       = false
   working_directory    = "02-config-vault-secret-vso"
+    remote_state_consumer_ids = [tfe_workspace.sync-secret-to-k8.id]
+
   vcs_repo {
     branch             = "main"
     identifier         = var.git_repo
