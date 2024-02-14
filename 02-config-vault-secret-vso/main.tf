@@ -23,7 +23,7 @@ terraform {
 }
 
 provider "aws" {
-  region = var.region
+  region = data.tfe_outputs.deploy-eks.values.region
 }
 
 provider "helm" {

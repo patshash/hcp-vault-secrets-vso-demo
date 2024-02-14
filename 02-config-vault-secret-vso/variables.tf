@@ -9,9 +9,3 @@ variable "kubernetes_namespace" {
   default = "demo-app"
   description = "Unique namespace for the demo app"
 }
-
-variable "region" {
-  description = "AWS region"
-  type        = string
-  default     = "ap-southeast-2"
-}
