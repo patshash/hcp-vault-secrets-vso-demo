@@ -22,6 +22,10 @@ terraform {
   }
 }
 
+provider "aws" {
+  region = data.tfe_outputs.deploy-eks.values.region
+}
+
 provider "helm" {
   kubernetes {
     host                   = data.tfe_outputs.deploy-eks.values.cluster_endpoint
@@ -48,7 +52,7 @@ data "hcp_project" "this" {
 # Get details about the Kube cluster needed to authenticate
 data "tfe_outputs" "deploy-eks" {
   organization = "pcarey-org"
-  workspace = "deploy-eks"
+  workspace = "01_deploy_eks"
 }
 
 data "aws_eks_cluster" "deploy-eks" {
@@ -134,7 +138,7 @@ resource "kubernetes_namespace" "demo-app" {
       mylabel = "demo"
     }
 
-    name = "demo-app"
+    name = var.kubernetes_namespace
   }
 }
 
