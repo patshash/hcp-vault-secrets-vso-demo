@@ -29,29 +29,29 @@ data "hcp_project" "this" {
 }
 
 # Get details needed to authenticate to Kubernetes
-data "tfe_outputs" "01-deploy-eks" {
+data "tfe_outputs" "deploy-eks" {
   organization = "pcarey-org"
-  workspace = "01-deploy-eks"
+  workspace = "01_deploy_eks"
 }
 
-data "tfe_outputs" "02-config-vault-secret-vso" {
+data "tfe_outputs" "config-vault-secret-vso" {
   organization = "pcarey-org"
   workspace = "02-config-vault-secret-vso"
 }
 
 data "aws_eks_cluster" "deploy-eks" {
-  name = data.tfe_outputs.01-deploy-eks.values.cluster_name
+  name = data.tfe_outputs.deploy-eks.values.cluster_name
 }
 
 data "aws_eks_cluster_auth" "deploy-eks" {
-  name = data.tfe_outputs.01-deploy-eks.values.cluster_name
+  name = data.tfe_outputs.deploy-eks.values.cluster_name
 }
 
 
 provider "kubernetes" {
-  host                   = data.tfe_outputs.01-deploy-eks.values.cluster_endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.01-deploy-eks.certificate_authority[0].data)
-  token                  = data.aws_eks_cluster_auth.01-deploy-eks.token
+  host                   = data.tfe_outputs.deploy-eks.values.cluster_endpoint
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.deploy-eks.certificate_authority[0].data)
+  token                  = data.aws_eks_cluster_auth.deploy-eks.token
 }
 
 # Configure VSO to use HCPAuth. 
@@ -80,10 +80,10 @@ resource "kubernetes_manifest" "hcpvaultsecretsapp_web_application" {
     "kind" = "HCPVaultSecretsApp"
     "metadata" = {
       "name" = "web-application"
-      "namespace" = data.tfe_outputs.02-config-vault-secret-vso.values.kubernetes_namespace
+      "namespace" = data.tfe_outputs.config-vault-secret-vso.values.kubernetes_namespace
     }
     "spec" = {
-      "appName" = data.tfe_outputs.02-config-vault-secret-vso.values.app_name
+      "appName" = data.tfe_outputs.config-vault-secret-vso.values.app_name
       "destination" = {
         "create" = true
         "labels" = {
