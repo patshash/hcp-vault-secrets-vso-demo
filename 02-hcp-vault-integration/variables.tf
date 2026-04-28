@@ -33,7 +33,7 @@ variable "tfc_org" {
 variable "tfc_workspace_eks" {
   description = "TFC workspace name for 01-deploy-eks outputs"
   type        = string
-  default     = "deploy-eks"
+  default     = "01_deploy_eks"
 }
 
 variable "demo_secret_path" {
