@@ -142,10 +142,10 @@ resource "helm_release" "vault_secrets_operator" {
 # =============================================================================
 
 # 4.1 — VaultConnection — tells VSO how to reach the Vault cluster
-resource "kubernetes_manifest" "vault_connection" {
+resource "kubectl_manifest" "vault_connection" {
   depends_on = [helm_release.vault_secrets_operator]
 
-  manifest = {
+  yaml_body = yamlencode({
     apiVersion = "secrets.hashicorp.com/v1beta1"
     kind       = "VaultConnection"
 
@@ -158,14 +158,14 @@ resource "kubernetes_manifest" "vault_connection" {
       address       = var.vault_address
       skipTLSVerify = false
     }
-  }
+  })
 }
 
 # 4.2 — VaultAuth — configures JWT auth for VSO
-resource "kubernetes_manifest" "vault_auth" {
-  depends_on = [kubernetes_manifest.vault_connection]
+resource "kubectl_manifest" "vault_auth" {
+  depends_on = [kubectl_manifest.vault_connection]
 
-  manifest = {
+  yaml_body = yamlencode({
     apiVersion = "secrets.hashicorp.com/v1beta1"
     kind       = "VaultAuth"
 
@@ -188,14 +188,14 @@ resource "kubernetes_manifest" "vault_auth" {
         tokenExpirationSeconds = 600
       }
     }
-  }
+  })
 }
 
 # 4.3 — VaultStaticSecret — syncs KV v2 secret to a Kubernetes Secret
-resource "kubernetes_manifest" "vault_static_secret" {
-  depends_on = [kubernetes_manifest.vault_auth]
+resource "kubectl_manifest" "vault_static_secret" {
+  depends_on = [kubectl_manifest.vault_auth]
 
-  manifest = {
+  yaml_body = yamlencode({
     apiVersion = "secrets.hashicorp.com/v1beta1"
     kind       = "VaultStaticSecret"
 
@@ -218,5 +218,5 @@ resource "kubernetes_manifest" "vault_static_secret" {
         create = true
       }
     }
-  }
+  })
 }
